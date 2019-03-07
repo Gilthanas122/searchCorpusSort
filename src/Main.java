@@ -28,30 +28,28 @@ public class Main {
         File destinationDir = new File("searchResults/" + directoryName);
         Files.createDirectory(destinationDir.toPath());
 
-
-        if (folder.isDirectory()) {
-            for (File file : listOfFiles) {
-                if (!file.isDirectory()) {
-                    // BufferedReader br = new BufferedReader(new FileReader(file));
-                    List<String> readAllLines = Files.readAllLines(file.toPath());
-                    for (String lines : readAllLines) {
-                        if (lines.contains(searchTerm)) {
-                            System.out.println(file.getName());
-                            File destFile = new File(destinationDir + "/" + file.getName());
-                            copyFileToLocation( file, destFile);
-                            break;
-                        }
-                    }
-
-                }
-            }
-        } else {
-            System.out.println("A Directory!");
-        }
-
+        copyFilesNewDirectory(listOfFiles, destinationDir, searchTerm, folder);
 
     }
-
+    private static void copyFilesNewDirectory(File[] listOfFiles, File destinationDir, String searchTerm, File folder) throws IOException {
+        for (File file : listOfFiles) {
+            if (!file.isDirectory()) {
+                List<String> readAllLines = Files.readAllLines(file.toPath());
+                for (String lines : readAllLines) {
+                    if (lines.contains(searchTerm)) {
+                        System.out.println(file.getName());
+                        File destFile = new File(destinationDir + "/" + file.getName());
+                        copyFileToLocation(file, destFile);
+                        break;
+                    }
+                }
+            } else {
+                folder = new File(folder.getPath() + "/" + file.getName());
+                listOfFiles = folder.listFiles();
+                copyFilesNewDirectory(listOfFiles, destinationDir, searchTerm, folder);
+            }
+        }
+    }
 
     private static boolean checkDirectoryName(File theDir) {
         return theDir.exists();
